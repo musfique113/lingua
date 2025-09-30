@@ -1,5 +1,5 @@
 import 'package:lingua/features/sentence/domain/entities/sentence.dart';
 
-abstract class SentenceRepository {
+abstract class TatoebaRemoteDataSource {
   Future<Sentence> fetchRandomSentence();
 }

@@ -1,16 +1,17 @@
 import 'package:lingua/features/sentence/data/models/audio_model.dart';
 import 'package:lingua/features/sentence/data/models/translation_model.dart';
+import 'package:lingua/features/sentence/domain/entities/sentence.dart';
 
-class SentenceData {
+class SentenceModel {
   final int id;
   final String text;
   final String lang;
   final String? license;
-  final List<Translation> translations;
-  final List<Audio> audios;
+  final List<TranslationModel> translations;
+  final List<AudioModel> audios;
   final String owner;
 
-  SentenceData({
+  const SentenceModel({
     required this.id,
     required this.text,
     required this.lang,
@@ -20,19 +21,34 @@ class SentenceData {
     required this.owner,
   });
 
-  factory SentenceData.fromJson(Map<String, dynamic> json) {
-    return SentenceData(
-      id: json['id'],
-      text: json['text'],
-      lang: json['lang'],
-      license: json['license'],
-      translations: (json['translations'] as List)
-          .map((t) => Translation.fromJson(t))
+  factory SentenceModel.fromJson(Map<String, dynamic> json) {
+    final translationsList = json['translations'] as List<dynamic>? ?? [];
+    final audiosList = json['audios'] as List<dynamic>? ?? [];
+
+    return SentenceModel(
+      id: json['id'] as int? ?? 0,
+      text: json['text'] as String? ?? '',
+      lang: json['lang'] as String? ?? '',
+      license: json['license'] as String?,
+      translations: translationsList
+          .map((t) => TranslationModel.fromJson(t as Map<String, dynamic>))
           .toList(),
-      audios: (json['audios'] as List)
-          .map((a) => Audio.fromJson(a))
+      audios: audiosList
+          .map((a) => AudioModel.fromJson(a as Map<String, dynamic>))
           .toList(),
-      owner: json['owner'],
+      owner: json['user']?['username'] as String? ?? 'unknown',
+    );
+  }
+
+  Sentence toEntity() {
+    return Sentence(
+      id: id,
+      text: text,
+      lang: lang,
+      license: license,
+      translations: translations.map((model) => model.toEntity()).toList(),
+      audios: audios.map((model) => model.toEntity()).toList(),
+      owner: owner,
     );
   }
 }
