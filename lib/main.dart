@@ -17,7 +17,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Lingua',
-      theme: ThemeData(scaffoldBackgroundColor: const Color(0xFF1A1A1A)),
       home: BlocProvider(
         create: (context) => getIt<SentenceBloc>()..add(LoadRandomSentence()),
         child: const SentenceDetailScreen(),
