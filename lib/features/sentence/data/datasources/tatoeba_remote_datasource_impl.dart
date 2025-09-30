@@ -1,26 +1,22 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
+import 'package:lingua/core/constants/app_constant.dart';
+import 'package:lingua/core/network/network_executor.dart';
 import 'package:lingua/features/sentence/data/models/sentence_model.dart';
 import 'package:lingua/features/sentence/domain/datasources/tatoeba_remote_datasource.dart';
 
 class TatoebaRemoteDataSourceImpl implements TatoebaRemoteDataSource {
-  final http.Client client;
+  final NetworkExecutor networkExecutor;
 
-  TatoebaRemoteDataSourceImpl({required this.client});
+  TatoebaRemoteDataSourceImpl({required this.networkExecutor});
+
+  String _urlPath(int randomId) => '/unstable/sentences/$randomId';
 
   @override
   Future<SentenceModel> fetchRandomSentence() async {
     final randomId = DateTime.now().millisecondsSinceEpoch % 10000000;
-    final response = await client.get(
-      Uri.parse('https://api.tatoeba.org/unstable/sentences/$randomId'),
+    final response = await networkExecutor.get(
+      '${AppConstant.baseUrl}${_urlPath(randomId)}',
     );
 
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
-      return SentenceModel.fromJson(json['data']);
-    } else {
-      throw Exception('Failed to load sentence');
-    }
+    return SentenceModel.fromJson(response['data']);
   }
 }
