@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
+import 'package:lingua/features/sentence/data/models/audio_model.dart';
+import 'package:lingua/features/sentence/data/models/translation_model.dart';
 import 'package:lingua/features/sentence/domain/entities/translation.dart';
-
 import 'audio.dart';
 
 abstract class Sentence extends Equatable {
@@ -8,8 +9,8 @@ abstract class Sentence extends Equatable {
   final String text;
   final String lang;
   final String? license;
-  final List<Translation> translations;
-  final List<Audio> audios;
+  final Iterable<TranslationModel> translations;
+  final Iterable<AudioModel> audios;
   final String owner;
 
   const Sentence({

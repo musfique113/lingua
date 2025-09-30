@@ -17,18 +17,22 @@ class TranslationModel extends Translation {
 
   factory TranslationModel.fromJson(Map<String, dynamic> json) {
     return TranslationModel(
-      id: json['id'],
-      text: json['text'],
-      lang: json['lang'],
-      license: json['license'],
-      isDirect: json['is_direct'],
-      audios: (json['audios'] as List)
-          .map((a) => AudioModel.fromJson(a))
-          .toList(),
-      transcriptions: (json['transcriptions'] as List)
-          .map((t) => TranscriptionModel.fromJson(t))
-          .toList(),
-      owner: json['owner'],
+      id: json['id'] ?? 0,
+      text: json['text'] ?? '',
+      lang: json['lang'] ?? '',
+      license: json['license'] ?? '',
+      isDirect: json['is_direct'] ?? false,
+      audios:
+          (json['audios'] as List?)
+              ?.map((a) => AudioModel.fromJson(a))
+              .toList() ??
+          [],
+      transcriptions:
+          (json['transcriptions'] as List?)
+              ?.map((t) => TranscriptionModel.fromJson(t))
+              .toList() ??
+          [],
+      owner: json['owner'] ?? '',
     );
   }
 }

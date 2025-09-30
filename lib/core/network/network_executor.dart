@@ -14,14 +14,11 @@ class NetworkExecutor {
   Future<dynamic> get(String url, {Map<String, String>? headers}) async {
     _logRequest('GET', url, headers: headers);
 
-    try {
-      final response = await _client.get(Uri.parse(url), headers: headers);
-      _logResponse('GET', url, response);
-      return _handleResponse(response);
-    } catch (e) {
-      _logError('GET', url, e);
-      throw NetworkException('Failed to connect to the server');
-    }
+    return _requestWithRetry(
+      () => _client.get(Uri.parse(url), headers: headers),
+      'GET',
+      url,
+    );
   }
 
   Future<dynamic> post(
@@ -31,18 +28,15 @@ class NetworkExecutor {
   }) async {
     _logRequest('POST', url, headers: headers, body: body);
 
-    try {
-      final response = await _client.post(
+    return _requestWithRetry(
+      () => _client.post(
         Uri.parse(url),
         headers: headers,
         body: json.encode(body),
-      );
-      _logResponse('POST', url, response);
-      return _handleResponse(response);
-    } catch (e) {
-      _logError('POST', url, e);
-      throw NetworkException('Failed to connect to the server');
-    }
+      ),
+      'POST',
+      url,
+    );
   }
 
   Future<dynamic> put(
@@ -52,35 +46,58 @@ class NetworkExecutor {
   }) async {
     _logRequest('PUT', url, headers: headers, body: body);
 
-    try {
-      final response = await _client.put(
+    return _requestWithRetry(
+      () => _client.put(
         Uri.parse(url),
         headers: headers,
         body: json.encode(body),
-      );
-      _logResponse('PUT', url, response);
-      return _handleResponse(response);
-    } catch (e) {
-      _logError('PUT', url, e);
-      throw NetworkException('Failed to connect to the server');
-    }
+      ),
+      'PUT',
+      url,
+    );
   }
 
   Future<dynamic> delete(String url, {Map<String, String>? headers}) async {
     _logRequest('DELETE', url, headers: headers);
 
-    try {
-      final response = await _client.delete(Uri.parse(url), headers: headers);
-      _logResponse('DELETE', url, response);
-      return _handleResponse(response);
-    } catch (e) {
-      _logError('DELETE', url, e);
-      throw NetworkException('Failed to connect to the server');
+    return _requestWithRetry(
+      () => _client.delete(Uri.parse(url), headers: headers),
+      'DELETE',
+      url,
+    );
+  }
+
+  Future<dynamic> _requestWithRetry(
+    Future<http.Response> Function() request,
+    String method,
+    String url, {
+    int retries = 3,
+    Duration delay = const Duration(seconds: 1),
+  }) async {
+    late final dynamic exception;
+
+    for (int i = 0; i < retries; i++) {
+      try {
+        final response = await request();
+        _logResponse(method, url, response);
+        return _handleResponse(response);
+      } catch (e) {
+        exception = e;
+        _logError(method, url, e);
+        if (e is InternalServerErrorException || e is NetworkException) {
+          if (i < retries - 1) {
+            await Future.delayed(delay);
+            continue;
+          }
+        }
+        rethrow;
+      }
     }
+    throw exception;
   }
 
   dynamic _handleResponse(http.Response response) {
-    final responseBody = json.decode(response.body);
+    final responseBody = json.decode(response.body) ?? {};
     switch (response.statusCode) {
       case 200:
       case 201:

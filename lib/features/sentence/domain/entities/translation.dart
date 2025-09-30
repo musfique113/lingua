@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:lingua/features/sentence/domain/entities/transcription.dart';
+import 'package:lingua/features/sentence/data/models/audio_model.dart';
+import 'package:lingua/features/sentence/data/models/transcription_model.dart';
 
-import 'audio.dart';
 
 abstract class Translation extends Equatable {
   final int id;
@@ -9,8 +9,8 @@ abstract class Translation extends Equatable {
   final String lang;
   final String? license;
   final bool isDirect;
-  final List<Audio> audios;
-  final List<Transcription> transcriptions;
+  final List<AudioModel> audios;
+  final List<TranscriptionModel> transcriptions;
   final String owner;
 
   const Translation({

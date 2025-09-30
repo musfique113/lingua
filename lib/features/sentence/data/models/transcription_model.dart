@@ -9,9 +9,9 @@ class TranscriptionModel extends Transcription {
 
   factory TranscriptionModel.fromJson(Map<String, dynamic> json) {
     return TranscriptionModel(
-      script: json['script'],
-      text: json['text'],
-      html: json['html'],
+      script: json['script'] ?? '',
+      text: json['text'] ?? '',
+      html: json['html'] ?? '',
     );
   }
 }

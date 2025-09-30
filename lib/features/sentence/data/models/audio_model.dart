@@ -9,9 +9,9 @@ class AudioModel extends Audio {
 
   factory AudioModel.fromJson(Map<String, dynamic> json) {
     return AudioModel(
-      id: json['id'],
-      author: json['author'],
-      downloadUrl: json['download_url'],
+      id: json['id'] ?? 0,
+      author: json['author'] ?? '',
+      downloadUrl: json['download_url'] ?? '',
     );
   }
 }

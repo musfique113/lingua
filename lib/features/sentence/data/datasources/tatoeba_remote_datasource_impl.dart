@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:lingua/core/constants/app_constant.dart';
 import 'package:lingua/core/network/network_executor.dart';
@@ -6,6 +8,7 @@ import 'package:lingua/features/sentence/domain/datasources/tatoeba_remote_datas
 
 class TatoebaRemoteDataSourceImpl implements TatoebaRemoteDataSource {
   final NetworkExecutor networkExecutor;
+  final Random _random = Random();
 
   TatoebaRemoteDataSourceImpl({required this.networkExecutor});
 
@@ -13,17 +16,30 @@ class TatoebaRemoteDataSourceImpl implements TatoebaRemoteDataSource {
 
   @override
   Future<SentenceModel> fetchRandomSentence() async {
-    final randomId = DateTime.now().millisecondsSinceEpoch % 10000000;
+    const int maxRetries = 10;
 
-    try {
-      final response = await networkExecutor.get(
-        '${AppConstant.baseUrl}${_urlPath(randomId)}',
-      );
+    for (int attempt = 0; attempt < maxRetries; attempt++) {
+      final randomId = _random.nextInt(120000) + 1;
 
-      return SentenceModel.fromJson(response['data']);
-    } catch (e, stack) {
-      debugPrintStack(label: e.toString(), stackTrace: stack);
-      throw Exception('Error fetching random sentence: $e');
+      try {
+        debugPrint(
+          'Attempt ${attempt + 1}: Fetching sentence with ID $randomId',
+        );
+
+        final response = await networkExecutor.get(
+          '${AppConstant.baseUrl}${_urlPath(randomId)}',
+        );
+        return SentenceModel.fromJson(response['data']);
+      } catch (e) {
+        debugPrint('Attempt ${attempt + 1} failed for ID $randomId: $e');
+        if (attempt == maxRetries - 1) {
+          debugPrint('All retry attempts failed.');
+          throw Exception(
+            'Failed to fetch a random sentence after $maxRetries attempts.',
+          );
+        }
+      }
     }
+    throw Exception('Failed to fetch a random sentence.');
   }
 }

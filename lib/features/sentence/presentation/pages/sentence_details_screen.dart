@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lingua/features/sentence/data/models/sentence_model.dart';
-import 'package:lingua/features/sentence/domain/entities/translation.dart';
+import 'package:lingua/features/sentence/data/models/translation_model.dart';
 import 'package:lingua/features/sentence/presentation/bloc/sentence_bloc.dart';
 
 class SentenceDetailScreen extends StatelessWidget {
@@ -121,8 +121,7 @@ class SentenceDetailScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   ...sentence.translations
                       .take(5)
-                      .map((t) => _buildTranslation(context, t))
-                      .toList(),
+                      .map((t) => _buildTranslation(context, t)),
                   const SizedBox(height: 24),
                 ],
               ),
@@ -205,7 +204,7 @@ class SentenceDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTranslation(BuildContext context, Translation translation) {
+  Widget _buildTranslation(BuildContext context, TranslationModel translation) {
     final hasTranscription = translation.transcriptions.isNotEmpty;
     final transcription = hasTranscription
         ? translation.transcriptions.firstWhere(
