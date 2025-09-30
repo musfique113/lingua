@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-abstract class Audio extends Equatable {
+class Audio extends Equatable {
   final int id;
   final String author;
   final String downloadUrl;

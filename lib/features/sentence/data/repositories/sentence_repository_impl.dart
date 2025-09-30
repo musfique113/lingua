@@ -1,5 +1,5 @@
-import 'package:lingua/features/sentence/data/models/sentence_model.dart';
 import 'package:lingua/features/sentence/domain/datasources/tatoeba_remote_datasource.dart';
+import 'package:lingua/features/sentence/domain/entities/sentence.dart';
 import 'package:lingua/features/sentence/domain/repositories/sentence_repository.dart';
 
 class SentenceRepositoryImpl implements SentenceRepository {
@@ -8,7 +8,7 @@ class SentenceRepositoryImpl implements SentenceRepository {
   SentenceRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<SentenceModel> fetchRandomSentence() async {
+  Future<Sentence> fetchRandomSentence() async {
     return await remoteDataSource.fetchRandomSentence();
   }
 }

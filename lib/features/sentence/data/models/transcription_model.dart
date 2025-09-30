@@ -1,11 +1,11 @@
 import 'package:lingua/features/sentence/domain/entities/transcription.dart';
 
-class TranscriptionModel extends Transcription {
-  const TranscriptionModel({
-    required super.script,
-    required super.text,
-    super.html,
-  });
+class TranscriptionModel {
+  final String? script;
+  final String? text;
+  final String? html;
+
+  TranscriptionModel({this.script, this.text, this.html});
 
   factory TranscriptionModel.fromJson(Map<String, dynamic> json) {
     return TranscriptionModel(
@@ -14,4 +14,7 @@ class TranscriptionModel extends Transcription {
       html: json['html'] ?? '',
     );
   }
+
+  Transcription toEntity() =>
+      Transcription(script: script ?? '', text: text ?? '', html: html ?? '');
 }

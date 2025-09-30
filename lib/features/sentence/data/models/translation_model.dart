@@ -3,16 +3,25 @@ import 'package:lingua/features/sentence/domain/entities/translation.dart';
 
 import 'audio_model.dart';
 
-class TranslationModel extends Translation {
-  const TranslationModel({
-    required super.id,
-    required super.text,
-    required super.lang,
-    super.license,
-    required super.isDirect,
-    required List<AudioModel> super.audios,
-    required List<TranscriptionModel> super.transcriptions,
-    required super.owner,
+class TranslationModel {
+  final int? id;
+  final String? text;
+  final String? lang;
+  final String? license;
+  final bool? isDirect;
+  final List<AudioModel>? audios;
+  final List<TranscriptionModel>? transcriptions;
+  final String? owner;
+
+  TranslationModel({
+    this.id,
+    this.text,
+    this.lang,
+    this.license,
+    this.isDirect,
+    this.audios,
+    this.transcriptions,
+    this.owner,
   });
 
   factory TranslationModel.fromJson(Map<String, dynamic> json) {
@@ -35,4 +44,15 @@ class TranslationModel extends Translation {
       owner: json['owner'] ?? '',
     );
   }
+
+  Translation toEntity() => Translation(
+    id: id ?? 0,
+    text: text ?? '',
+    lang: lang ?? '',
+    license: license ?? '',
+    isDirect: isDirect ?? false,
+    audios: audios!.map((model) => model.toEntity()).toList(),
+    transcriptions: transcriptions!.map((model) => model.toEntity()).toList(),
+    owner: owner ?? '',
+  );
 }

@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lingua/features/sentence/data/models/sentence_model.dart';
+import 'package:lingua/features/sentence/domain/entities/sentence.dart';
 import 'package:lingua/features/sentence/domain/usecases/get_random_sentence.dart';
 import 'package:lingua/features/sentence/domain/usecases/play_audio.dart';
 

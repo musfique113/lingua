@@ -1,5 +1,5 @@
-import 'package:lingua/features/sentence/data/models/sentence_model.dart';
+import 'package:lingua/features/sentence/domain/entities/sentence.dart';
 
 abstract class SentenceRepository {
-  Future<SentenceModel> fetchRandomSentence();
+  Future<Sentence> fetchRandomSentence();
 }

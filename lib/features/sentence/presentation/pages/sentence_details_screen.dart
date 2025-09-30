@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lingua/features/sentence/data/models/sentence_model.dart';
-import 'package:lingua/features/sentence/data/models/translation_model.dart';
+import 'package:lingua/features/sentence/domain/entities/sentence.dart';
+import 'package:lingua/features/sentence/domain/entities/translation.dart';
 import 'package:lingua/features/sentence/presentation/bloc/sentence_bloc.dart';
 
 class SentenceDetailScreen extends StatelessWidget {
@@ -66,7 +66,7 @@ class SentenceDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, SentenceModel sentence) {
+  Widget _buildContent(BuildContext context, Sentence sentence) {
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -132,7 +132,7 @@ class SentenceDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMainSentence(BuildContext context, SentenceModel sentence) {
+  Widget _buildMainSentence(BuildContext context, Sentence sentence) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -204,7 +204,7 @@ class SentenceDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTranslation(BuildContext context, TranslationModel translation) {
+  Widget _buildTranslation(BuildContext context, Translation translation) {
     final hasTranscription = translation.transcriptions.isNotEmpty;
     final transcription = hasTranscription
         ? translation.transcriptions.firstWhere(

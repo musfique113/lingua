@@ -5,6 +5,7 @@ import 'package:lingua/core/constants/app_constant.dart';
 import 'package:lingua/core/network/network_executor.dart';
 import 'package:lingua/features/sentence/data/models/sentence_model.dart';
 import 'package:lingua/features/sentence/domain/datasources/tatoeba_remote_datasource.dart';
+import 'package:lingua/features/sentence/domain/entities/sentence.dart';
 
 class TatoebaRemoteDataSourceImpl implements TatoebaRemoteDataSource {
   final NetworkExecutor networkExecutor;
@@ -15,7 +16,7 @@ class TatoebaRemoteDataSourceImpl implements TatoebaRemoteDataSource {
   String _urlPath(int randomId) => 'unstable/sentences/$randomId';
 
   @override
-  Future<SentenceModel> fetchRandomSentence() async {
+  Future<Sentence> fetchRandomSentence() async {
     const int maxRetries = 10;
 
     for (int attempt = 0; attempt < maxRetries; attempt++) {
@@ -29,7 +30,7 @@ class TatoebaRemoteDataSourceImpl implements TatoebaRemoteDataSource {
         final response = await networkExecutor.get(
           '${AppConstant.baseUrl}${_urlPath(randomId)}',
         );
-        return SentenceModel.fromJson(response['data']);
+        return SentenceModel.fromJson(response['data']).toEntity();
       } catch (e) {
         debugPrint('Attempt ${attempt + 1} failed for ID $randomId: $e');
         if (attempt == maxRetries - 1) {
