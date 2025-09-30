@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lingua/features/sentence/data/models/sentence_model.dart';
-import 'package:lingua/features/sentence/data/models/translation_model.dart';
-import 'package:lingua/features/sentence/presentation/bloc/play_audio_event.dart';
+import 'package:lingua/features/sentence/domain/entities/translation.dart';
 import 'package:lingua/features/sentence/presentation/bloc/sentence_bloc.dart';
-import 'package:lingua/features/sentence/presentation/bloc/sentence_event.dart';
 
 class SentenceDetailScreen extends StatelessWidget {
   const SentenceDetailScreen({super.key});
@@ -12,7 +10,6 @@ class SentenceDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A1A),
       body: SafeArea(
         child: Column(
           children: [
@@ -69,7 +66,7 @@ class SentenceDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, SentenceData sentence) {
+  Widget _buildContent(BuildContext context, SentenceModel sentence) {
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -86,10 +83,7 @@ class SentenceDetailScreen extends StatelessWidget {
               children: [
                 const Text(
                   'Sentence Detail',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                 ),
                 ElevatedButton.icon(
                   onPressed: () {
@@ -122,10 +116,7 @@ class SentenceDetailScreen extends StatelessWidget {
                   const SizedBox(height: 32),
                   const Text(
                     'Translations',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 16),
                   ...sentence.translations
@@ -142,7 +133,7 @@ class SentenceDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMainSentence(BuildContext context, SentenceData sentence) {
+  Widget _buildMainSentence(BuildContext context, SentenceModel sentence) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -154,10 +145,7 @@ class SentenceDetailScreen extends StatelessWidget {
         children: [
           Text(
             sentence.text,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
           Row(
@@ -180,18 +168,12 @@ class SentenceDetailScreen extends StatelessWidget {
               const SizedBox(width: 12),
               Text(
                 'Contributor: ${sentence.owner}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
               const SizedBox(width: 8),
               Text(
                 sentence.license ?? '',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
             ],
           ),
@@ -202,7 +184,7 @@ class SentenceDetailScreen extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     context.read<SentenceBloc>().add(
-                      PlayAudio(sentence.audios.first.downloadUrl),
+                      PlayAudioEvent(sentence.audios.first.downloadUrl),
                     );
                   },
                   child: const Icon(Icons.play_arrow, size: 32),
@@ -214,10 +196,7 @@ class SentenceDetailScreen extends StatelessWidget {
                 sentence.audios.isNotEmpty
                     ? 'Audio available'
                     : 'No audio available',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
             ],
           ),
@@ -229,9 +208,10 @@ class SentenceDetailScreen extends StatelessWidget {
   Widget _buildTranslation(BuildContext context, Translation translation) {
     final hasTranscription = translation.transcriptions.isNotEmpty;
     final transcription = hasTranscription
-        ? translation.transcriptions
-        .firstWhere((t) => t.script == 'Hrkt' || t.script == 'Latn',
-        orElse: () => translation.transcriptions.first)
+        ? translation.transcriptions.firstWhere(
+            (t) => t.script == 'Hrkt' || t.script == 'Latn',
+            orElse: () => translation.transcriptions.first,
+          )
         : null;
 
     return Container(
@@ -260,7 +240,7 @@ class SentenceDetailScreen extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     context.read<SentenceBloc>().add(
-                      PlayAudio(translation.audios.first.downloadUrl),
+                      PlayAudioEvent(translation.audios.first.downloadUrl),
                     );
                   },
                   child: const Icon(Icons.play_arrow, size: 24),
@@ -268,24 +248,27 @@ class SentenceDetailScreen extends StatelessWidget {
               const SizedBox(width: 12),
               if (hasTranscription)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey[400]!),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.article_outlined,
-                          size: 14, color: Colors.grey[700]),
+                      Icon(
+                        Icons.article_outlined,
+                        size: 14,
+                        color: Colors.grey[700],
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         transcription!.script == 'Hrkt'
                             ? 'Furigana'
                             : 'Transcription',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[700],
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                       ),
                     ],
                   ),
@@ -313,7 +296,10 @@ class SentenceDetailScreen extends StatelessWidget {
               const SizedBox(width: 8),
               if (translation.isDirect)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.green[50],
                     borderRadius: BorderRadius.circular(4),

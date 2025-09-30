@@ -1,16 +1,14 @@
-class Audio {
-  final int id;
-  final String author;
-  final String downloadUrl;
+import '../../domain/entities/audio.dart';
 
-  Audio({
-    required this.id,
-    required this.author,
-    required this.downloadUrl,
+class AudioModel extends Audio {
+  const AudioModel({
+    required super.id,
+    required super.author,
+    required super.downloadUrl,
   });
 
-  factory Audio.fromJson(Map<String, dynamic> json) {
-    return Audio(
+  factory AudioModel.fromJson(Map<String, dynamic> json) {
+    return AudioModel(
       id: json['id'],
       author: json['author'],
       downloadUrl: json['download_url'],

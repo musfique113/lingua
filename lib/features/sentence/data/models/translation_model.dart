@@ -1,40 +1,32 @@
-import 'package:lingua/features/sentence/data/models/transcription.dart';
+import 'package:lingua/features/sentence/data/models/transcription_model.dart';
+import 'package:lingua/features/sentence/domain/entities/translation.dart';
 
 import 'audio_model.dart';
 
-class Translation {
-  final int id;
-  final String text;
-  final String lang;
-  final String? license;
-  final bool isDirect;
-  final List<Audio> audios;
-  final List<Transcription> transcriptions;
-  final String owner;
-
-  Translation({
-    required this.id,
-    required this.text,
-    required this.lang,
-    this.license,
-    required this.isDirect,
-    required this.audios,
-    required this.transcriptions,
-    required this.owner,
+class TranslationModel extends Translation {
+  const TranslationModel({
+    required super.id,
+    required super.text,
+    required super.lang,
+    super.license,
+    required super.isDirect,
+    required List<AudioModel> super.audios,
+    required List<TranscriptionModel> super.transcriptions,
+    required super.owner,
   });
 
-  factory Translation.fromJson(Map<String, dynamic> json) {
-    return Translation(
+  factory TranslationModel.fromJson(Map<String, dynamic> json) {
+    return TranslationModel(
       id: json['id'],
       text: json['text'],
       lang: json['lang'],
       license: json['license'],
       isDirect: json['is_direct'],
       audios: (json['audios'] as List)
-          .map((a) => Audio.fromJson(a))
+          .map((a) => AudioModel.fromJson(a))
           .toList(),
       transcriptions: (json['transcriptions'] as List)
-          .map((t) => Transcription.fromJson(t))
+          .map((t) => TranscriptionModel.fromJson(t))
           .toList(),
       owner: json['owner'],
     );
