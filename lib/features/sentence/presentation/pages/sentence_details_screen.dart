@@ -9,26 +9,85 @@ class SentenceDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: const Icon(Icons.translate),
-        title: const Text('Lingua'),
-      ),
-      body: BlocBuilder<SentenceBloc, SentenceState>(
+      floatingActionButton: BlocBuilder<SentenceBloc, SentenceState>(
         builder: (context, state) {
-          if (state is SentenceLoading) {
-            return const Center(child: CircularProgressIndicator.adaptive());
-          } else if (state is SentenceLoaded) {
-            return SentenceContentWidget(sentence: state.sentence);
-          } else if (state is SentenceError) {
-            return Center(
-              child: Text(
-                'Error: ${state.message}',
-                style: const TextStyle(color: Colors.white),
-              ),
-            );
-          }
-          return const SizedBox();
+          final isLoading = state is SentenceLoading;
+          return FloatingActionButton.extended(
+            onPressed: isLoading
+                ? null
+                : () {
+                    context.read<SentenceBloc>().add(LoadRandomSentence());
+                  },
+            backgroundColor: isLoading ? Colors.grey : Color(0xFF7C3AED),
+            foregroundColor: Colors.white,
+            label: Row(
+              children: [
+                const Icon(Icons.shuffle, size: 18),
+                SizedBox(width: 9),
+                Text('Random'),
+              ],
+            ),
+          );
         },
+      ),
+      body: SafeArea(
+        child: BlocBuilder<SentenceBloc, SentenceState>(
+          builder: (context, state) {
+            if (state is SentenceInitial) {
+              context.read<SentenceBloc>().add(LoadRandomSentence());
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is SentenceLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is SentenceLoaded) {
+              return SentenceContentWidget(sentence: state.sentence);
+            } else if (state is AudioLoading) {
+              return SentenceContentWidget(sentence: state.sentence);
+            } else if (state is AudioPlaying) {
+              return SentenceContentWidget(sentence: state.sentence);
+            } else if (state is SentenceError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Error loading sentence',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      state.message,
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        context.read<SentenceBloc>().add(LoadRandomSentence());
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Try Again'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

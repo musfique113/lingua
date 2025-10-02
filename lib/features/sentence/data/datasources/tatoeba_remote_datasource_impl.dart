@@ -5,7 +5,6 @@ import 'package:lingua/core/constants/app_constant.dart';
 import 'package:lingua/core/network/network_executor.dart';
 import 'package:lingua/features/sentence/data/models/sentence_model.dart';
 import 'package:lingua/features/sentence/domain/datasources/tatoeba_remote_datasource.dart';
-import 'package:lingua/features/sentence/domain/entities/sentence.dart';
 
 class TatoebaRemoteDataSourceImpl implements TatoebaRemoteDataSource {
   final NetworkExecutor networkExecutor;
@@ -13,34 +12,31 @@ class TatoebaRemoteDataSourceImpl implements TatoebaRemoteDataSource {
 
   TatoebaRemoteDataSourceImpl({required this.networkExecutor});
 
-  String _urlPath(int randomId) => 'unstable/sentences/$randomId';
-
   @override
-  Future<Sentence> fetchRandomSentence() async {
-    const int maxRetries = 10;
+  Future<SentenceModel> fetchRandomSentence() async {
+    final Map<String, dynamic> queryParameters = {
+      'from': 'eng',
+      'has_audio': 'yes',
+      'sort': 'random',
+    };
 
-    for (int attempt = 0; attempt < maxRetries; attempt++) {
-      final randomId = _random.nextInt(120000) + 1;
+    try {
+      final response = await networkExecutor.get(
+        '${AppConstant.baseUrl}eng/api_v0/search',
+        queryParameters: queryParameters,
+      );
 
-      try {
-        debugPrint(
-          'Attempt ${attempt + 1}: Fetching sentence with ID $randomId',
-        );
+      final results = response['results'] as List;
 
-        final response = await networkExecutor.get(
-          '${AppConstant.baseUrl}${_urlPath(randomId)}',
-        );
-        return SentenceModel.fromJson(response['data']).toEntity();
-      } catch (e) {
-        debugPrint('Attempt ${attempt + 1} failed for ID $randomId: $e');
-        if (attempt == maxRetries - 1) {
-          debugPrint('All retry attempts failed.');
-          throw Exception(
-            'Failed to fetch a random sentence after $maxRetries attempts.',
-          );
-        }
+      if (results.isNotEmpty) {
+        final randomSentence = results[_random.nextInt(results.length)];
+        return SentenceModel.fromJson(randomSentence);
+      } else {
+        throw Exception('No sentences found.');
       }
+    } catch (e) {
+      debugPrint('Failed to fetch random sentence: $e');
+      throw Exception('Failed to fetch a random sentence.');
     }
-    throw Exception('Failed to fetch a random sentence.');
   }
 }

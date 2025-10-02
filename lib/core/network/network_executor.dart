@@ -11,13 +11,18 @@ class NetworkExecutor {
 
   NetworkExecutor(this._client);
 
-  Future<dynamic> get(String url, {Map<String, String>? headers}) async {
-    _logRequest('GET', url, headers: headers);
+  Future<dynamic> get(
+    String url, {
+    Map<String, String>? headers,
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    final uri = Uri.parse(url).replace(queryParameters: queryParameters);
+    _logRequest('GET', uri.toString(), headers: headers);
 
     return _requestWithRetry(
-      () => _client.get(Uri.parse(url), headers: headers),
+      () => _client.get(uri, headers: headers),
       'GET',
-      url,
+      uri.toString(),
     );
   }
 
