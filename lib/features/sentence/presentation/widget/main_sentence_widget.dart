@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lingua/features/sentence/data/models/sentence_model.dart';
-import 'package:lingua/features/sentence/presentation/bloc/sentence_bloc.dart';
 import 'package:lingua/features/sentence/presentation/widget/audio_player_widget.dart';
 import 'package:lingua/features/sentence/presentation/widget/country_emoji_widget.dart';
 
@@ -20,7 +18,7 @@ class MainSentenceWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -29,7 +27,7 @@ class MainSentenceWidget extends StatelessWidget {
           Text(
             sentence.text,
             style: const TextStyle(
-              fontSize: 24,
+              fontSize: 32,
               fontWeight: FontWeight.w600,
               height: 1.4,
             ),
@@ -46,12 +44,15 @@ class MainSentenceWidget extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
+                  color: Theme.of(context).colorScheme.secondary,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   'Contributor: ${sentence.audios.isNotEmpty ? sentence.audios.first.author : "Unknown"}',
-                  style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
                 ),
               ),
               Container(
@@ -60,12 +61,15 @@ class MainSentenceWidget extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
+                  color: Theme.of(context).colorScheme.secondary,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   sentence.license,
-                  style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
                 ),
               ),
             ],
@@ -78,7 +82,12 @@ class MainSentenceWidget extends StatelessWidget {
               const Spacer(),
               Text(
                 hasAudio ? 'Audio available' : 'No audio available',
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
+                ),
               ),
             ],
           ),

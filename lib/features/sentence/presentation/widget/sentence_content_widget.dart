@@ -26,9 +26,13 @@ class SentenceContentWidget extends StatelessWidget {
               MainSentenceWidget(sentence: sentence),
               if (flatTranslations.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   '🌐 Translations',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
               ],
             ],

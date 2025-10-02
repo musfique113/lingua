@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:lingua/features/sentence/presentation/pages/sentence_details_screen.dart';
 
