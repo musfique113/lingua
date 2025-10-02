@@ -1,55 +1,49 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lingua/features/sentence/data/models/sentence_model.dart';
-import 'package:lingua/features/sentence/domain/repositories/sentence_repository.dart';
-import 'package:lingua/features/sentence/presentation/bloc/play_audio_event.dart';
-import 'package:lingua/features/sentence/presentation/bloc/sentence_event.dart';
+import 'package:lingua/features/sentence/domain/usecases/get_random_sentence.dart';
+import 'package:lingua/features/sentence/domain/usecases/play_audio.dart';
 
-abstract class SentenceState extends Equatable {
-  @override
-  List<Object?> get props => [];
-}
-
-class SentenceInitial extends SentenceState {}
-
-class SentenceLoading extends SentenceState {}
-
-class SentenceLoaded extends SentenceState {
-  final SentenceData sentence;
-
-  SentenceLoaded(this.sentence);
-
-  @override
-  List<Object?> get props => [sentence];
-}
-
-class SentenceError extends SentenceState {
-  final String message;
-
-  SentenceError(this.message);
-
-  @override
-  List<Object?> get props => [message];
-}
-
+part 'sentence_event.dart';
+part 'sentence_state.dart';
 
 class SentenceBloc extends Bloc<SentenceEvent, SentenceState> {
-  final TatoebaRepository repository;
-  final AudioPlayer audioPlayer = AudioPlayer();
+  final GetRandomSentence getRandomSentence;
+  final PlayAudio playAudio;
+  String? _currentlyPlayingUrl;
+  StreamSubscription<PlayerState>? _playerStateSubscription;
 
-  SentenceBloc({required this.repository}) : super(SentenceInitial()) {
+  SentenceBloc({required this.getRandomSentence, required this.playAudio})
+    : super(SentenceInitial()) {
     on<LoadRandomSentence>(_onLoadRandomSentence);
-    on<PlayAudio>(_onPlayAudio);
+    on<PlayAudioEvent>(_onPlayAudio);
+    on<StopAudioEvent>(_onStopAudio);
+    on<AudioCompletedEvent>(_onAudioCompleted);
+
+    _playerStateSubscription = playAudio.onPlayerStateChanged.listen((state) {
+      if (state == PlayerState.completed || state == PlayerState.stopped) {
+        add(AudioCompletedEvent());
+      }
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _playerStateSubscription?.cancel();
+    playAudio.dispose();
+    return super.close();
   }
 
   Future<void> _onLoadRandomSentence(
-      LoadRandomSentence event,
-      Emitter<SentenceState> emit,
-      ) async {
+    LoadRandomSentence event,
+    Emitter<SentenceState> emit,
+  ) async {
     emit(SentenceLoading());
     try {
-      final sentence = await repository.fetchRandomSentence();
+      final sentence = await getRandomSentence();
       emit(SentenceLoaded(sentence));
     } catch (e) {
       emit(SentenceError(e.toString()));
@@ -57,19 +51,54 @@ class SentenceBloc extends Bloc<SentenceEvent, SentenceState> {
   }
 
   Future<void> _onPlayAudio(
-      PlayAudio event,
-      Emitter<SentenceState> emit,
-      ) async {
-    try {
-      await audioPlayer.play(UrlSource(event.url));
-    } catch (e) {
-      print('Error playing audio: $e');
+    PlayAudioEvent event,
+    Emitter<SentenceState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is SentenceLoaded || currentState is AudioPlaying) {
+      final sentence = currentState is SentenceLoaded
+          ? currentState.sentence
+          : (currentState as AudioPlaying).sentence;
+
+      _currentlyPlayingUrl = event.url;
+      emit(AudioLoading(event.url, sentence));
+
+      try {
+        await playAudio(event.url);
+        if (_currentlyPlayingUrl == event.url) {
+          emit(AudioPlaying(event.url, sentence));
+        }
+      } catch (e) {
+        emit(SentenceLoaded(sentence));
+      }
     }
   }
 
-  @override
-  Future<void> close() {
-    audioPlayer.dispose();
-    return super.close();
+  Future<void> _onStopAudio(
+    StopAudioEvent event,
+    Emitter<SentenceState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is AudioPlaying || currentState is AudioLoading) {
+      _currentlyPlayingUrl = null;
+      await playAudio.stop();
+
+      final sentence = currentState is AudioPlaying
+          ? currentState.sentence
+          : (currentState as AudioLoading).sentence;
+
+      emit(SentenceLoaded(sentence));
+    }
+  }
+
+  Future<void> _onAudioCompleted(
+    AudioCompletedEvent event,
+    Emitter<SentenceState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is AudioPlaying) {
+      _currentlyPlayingUrl = null;
+      emit(SentenceLoaded(currentState.sentence));
+    }
   }
 }
