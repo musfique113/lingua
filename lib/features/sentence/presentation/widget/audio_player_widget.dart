@@ -41,7 +41,9 @@ class AudioPlayerWidget extends StatelessWidget {
               : Icon(
                   isPlaying ? Icons.stop_circle : Icons.play_arrow,
                   size: 24,
-                  color: isConnected ? const Color(0xFF7C3AED) : Colors.grey,
+                  color: isConnected
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.grey,
                 ),
         );
       },

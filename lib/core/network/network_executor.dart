@@ -84,7 +84,7 @@ class NetworkExecutor {
     for (int i = 0; i < retries; i++) {
       try {
         final response = await request();
-        _logResponse(method, url, response);
+        // _logResponse(method, url, response);
         return _handleResponse(response);
       } catch (e) {
         exception = e;
