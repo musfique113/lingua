@@ -21,7 +21,7 @@ dependencies:
   audioplayers: ^6.5.1
   shared_preferences: ^2.5.3
   connectivity_plus: ^7.0.0
-  hive: ^2.2.3
+  flutter_cache_manager: ^3.4.1
 
 dev_dependencies:
   flutter_test:
