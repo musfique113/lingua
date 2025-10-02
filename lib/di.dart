@@ -45,7 +45,6 @@ void configureDependencies() {
     () => SentenceRepositoryImpl(
       remoteDataSource: getIt(),
       localDataSource: getIt(),
-      connectivityBloc: getIt(),
     ),
   );
 
