@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lingua/features/sentence/data/models/sentence_model.dart';
 import 'package:lingua/features/sentence/presentation/bloc/sentence_bloc.dart';
+import 'package:lingua/features/sentence/presentation/widget/audio_player_widget.dart';
+import 'package:lingua/features/sentence/presentation/widget/country_emoji_widget.dart';
 
 class TranslationWidget extends StatelessWidget {
   final Translation translation;
@@ -28,13 +30,14 @@ class TranslationWidget extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey[200]!),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Text(
@@ -42,100 +45,69 @@ class TranslationWidget extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
+                    height: 1.4,
                   ),
                 ),
               ),
-              if (hasAudio)
-                InkWell(
-                  onTap: () {
-                    context.read<SentenceBloc>().add(PlayAudioEvent(audioUrl!));
-                  },
-                  child: const Icon(Icons.play_arrow, size: 24),
-                ),
               const SizedBox(width: 12),
-              if (hasTranscription)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey[400]!),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.article_outlined,
-                        size: 14,
-                        color: Colors.grey[700],
+              Row(
+                children: [
+                  if (hasAudio) AudioPlayerWidget(audioUrl: audioUrl!),
+                  if (hasTranscription) ...[
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        transcription!['script'] == 'Hrkt'
-                            ? 'Furigana'
-                            : 'Transcription',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: const Color(0xFF7C3AED)),
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  translation.lang.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[700],
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              if (translation.isDirect)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    'Direct Translation',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.green[700],
-                      fontWeight: FontWeight.w500,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.article_outlined,
+                            size: 14,
+                            color: Color(0xFF7C3AED),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            transcription!['script'] == 'Hrkt'
+                                ? 'Furigana'
+                                : 'Transcription',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFF7C3AED),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
+                  ],
+                ],
+              ),
             ],
           ),
+          const SizedBox(height: 12),
+          CountryEmojiWidget(langCode: translation.lang),
           if (hasTranscription) ...[
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(6),
+                color: const Color(0xFFF3F4F6),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 transcription!['text'] ?? '',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 13,
                   color: Colors.grey[700],
                   fontStyle: FontStyle.italic,
+                  height: 1.4,
                 ),
               ),
             ),

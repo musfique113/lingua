@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lingua/features/sentence/data/models/sentence_model.dart';
 import 'package:lingua/features/sentence/presentation/bloc/sentence_bloc.dart';
+import 'package:lingua/features/sentence/presentation/widget/audio_player_widget.dart';
+import 'package:lingua/features/sentence/presentation/widget/country_emoji_widget.dart';
 
 class MainSentenceWidget extends StatelessWidget {
   final SentenceModel sentence;
@@ -10,7 +12,6 @@ class MainSentenceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Check if audios list is not empty and get download URL
     final hasAudio = sentence.audios.isNotEmpty;
     final audioUrl = hasAudio
         ? 'https://api.tatoeba.org/unstable/audio/${sentence.audios.first.id}/file'
@@ -20,57 +21,60 @@ class MainSentenceWidget extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             sentence.text,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              height: 1.4,
+            ),
           ),
-          const SizedBox(height: 12),
-          Row(
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
+              CountryEmojiWidget(langCode: sentence.lang),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  sentence.lang.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[700],
-                    fontWeight: FontWeight.w500,
-                  ),
+                  'Contributor: ${sentence.audios.isNotEmpty ? sentence.audios.first.author : "Unknown"}',
+                  style: TextStyle(fontSize: 11, color: Colors.grey[700]),
                 ),
               ),
-              const SizedBox(width: 12),
-              Text(
-                sentence.license,
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  sentence.license,
+                  style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              InkWell(
-                onTap: hasAudio
-                    ? () {
-                        context.read<SentenceBloc>().add(
-                          PlayAudioEvent(audioUrl!),
-                        );
-                      }
-                    : null,
-                child: Icon(
-                  Icons.play_arrow,
-                  size: 32,
-                  color: hasAudio ? Colors.black : Colors.grey,
-                ),
-              ),
+              if (hasAudio) AudioPlayerWidget(audioUrl: audioUrl!),
               const Spacer(),
               Text(
                 hasAudio ? 'Audio available' : 'No audio available',

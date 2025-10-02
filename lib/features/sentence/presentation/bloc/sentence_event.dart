@@ -17,3 +17,7 @@ class PlayAudioEvent extends SentenceEvent {
   @override
   List<Object> get props => [url];
 }
+
+class StopAudioEvent extends SentenceEvent {}
+
+class AudioCompletedEvent extends SentenceEvent {}

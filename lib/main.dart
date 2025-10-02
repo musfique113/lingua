@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Lingua',
       home: BlocProvider(
-        create: (context) => getIt<SentenceBloc>()..add(LoadRandomSentence()),
+        create: (context) => getIt<SentenceBloc>(),
         child: const SentenceDetailScreen(),
       ),
     );
