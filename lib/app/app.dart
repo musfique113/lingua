@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Lingua',
-        initialRoute: AppRoutes.sentenceDetails,
+        initialRoute: AppRoutes.splash,
         routes: AppRoutes.routes,
         theme: AppTheme.lightTheme(),
         darkTheme: AppTheme.darkTheme(),
@@ -38,13 +38,16 @@ class MyApp extends StatelessWidget {
   }
 
   void _showNoInternetToast(BuildContext context, ConnectivityState state) {
+    final theme = Theme.of(context);
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
           state.isConnected ? 'Internet Connected' : 'No Internet Connection',
         ),
-        backgroundColor: state.isConnected ? Colors.green : Colors.red,
+        backgroundColor: state.isConnected
+            ? theme.colorScheme.primary
+            : theme.colorScheme.error,
         duration: const Duration(seconds: 3),
       ),
     );

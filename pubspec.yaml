@@ -39,5 +39,8 @@ flutter:
       fonts:
         - asset: assets/fonts/poppins.ttf
           weight: 400
+  assets:
+    - assets/images/
+
 
 
