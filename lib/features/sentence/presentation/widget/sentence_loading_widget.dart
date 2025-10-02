@@ -46,7 +46,7 @@ class SentenceLoadingWidget extends StatelessWidget {
           children: [
             Container(
               width: double.infinity,
-              height: 88,
+              height: 220,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),

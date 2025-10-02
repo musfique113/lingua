@@ -27,7 +27,7 @@ class SentenceDetailScreen extends StatelessWidget {
               children: [
                 const Icon(Icons.shuffle, size: 18),
                 SizedBox(width: 9),
-                Text('Random'),
+                Text('Random Sentence'),
               ],
             ),
           );
