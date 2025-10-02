@@ -20,7 +20,7 @@ class AudioPlayerWidget extends StatelessWidget {
                   if (isPlaying) {
                     context.read<SentenceBloc>().add(StopAudioEvent());
                   } else {
-                    context.read<SentenceBloc>().add(PlayAudioEvent(audioUrl!));
+                    context.read<SentenceBloc>().add(PlayAudioEvent(audioUrl));
                   }
                 }
               : null,
@@ -36,7 +36,7 @@ class AudioPlayerWidget extends StatelessWidget {
                   ),
                 )
               : Icon(
-                  isPlaying ? Icons.pause : Icons.play_arrow,
+                  isPlaying ? Icons.stop_circle : Icons.play_arrow,
                   size: 24,
                   color: const Color(0xFF7C3AED),
                 ),
