@@ -1,18 +1,23 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lingua/features/sentence/domain/entities/sentence.dart';
+import 'package:lingua/features/sentence/data/models/sentence_model.dart';
 import 'package:lingua/features/sentence/presentation/bloc/sentence_bloc.dart';
 import 'package:lingua/features/sentence/presentation/widget/main_sentence_widget.dart';
 import 'package:lingua/features/sentence/presentation/widget/translation_widget.dart';
 
 class SentenceContentWidget extends StatelessWidget {
-  final Sentence sentence;
+  final SentenceModel sentence;
 
   const SentenceContentWidget({super.key, required this.sentence});
 
   @override
   Widget build(BuildContext context) {
+    // Flatten the nested translations list and take first 5
+    final flatTranslations = sentence.translations
+        .expand((group) => group)
+        .take(10)
+        .toList();
+
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -60,14 +65,27 @@ class SentenceContentWidget extends StatelessWidget {
                 children: [
                   MainSentenceWidget(sentence: sentence),
                   const SizedBox(height: 32),
-                  const Text(
-                    'Translations',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 16),
-                  ...sentence.translations
-                      .take(5)
-                      .map((t) => TranslationWidget(translation: t)),
+                  if (flatTranslations.isNotEmpty) ...[
+                    const Text(
+                      'Translations',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ...flatTranslations.map(
+                      (translation) =>
+                          TranslationWidget(translation: translation),
+                    ),
+                  ] else
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Text(
+                        'No translations available',
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      ),
+                    ),
                   const SizedBox(height: 24),
                 ],
               ),

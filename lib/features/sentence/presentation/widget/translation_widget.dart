@@ -1,7 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lingua/features/sentence/domain/entities/translation.dart';
+import 'package:lingua/features/sentence/data/models/sentence_model.dart';
 import 'package:lingua/features/sentence/presentation/bloc/sentence_bloc.dart';
 
 class TranslationWidget extends StatelessWidget {
@@ -14,9 +13,14 @@ class TranslationWidget extends StatelessWidget {
     final hasTranscription = translation.transcriptions.isNotEmpty;
     final transcription = hasTranscription
         ? translation.transcriptions.firstWhere(
-            (t) => t.script == 'Hrkt' || t.script == 'Latn',
+            (t) => t['script'] == 'Hrkt' || t['script'] == 'Latn',
             orElse: () => translation.transcriptions.first,
           )
+        : null;
+
+    final hasAudio = translation.audios.isNotEmpty;
+    final audioUrl = hasAudio
+        ? 'https://api.tatoeba.org/unstable/audio/${translation.audios.first.id}/file'
         : null;
 
     return Container(
@@ -41,12 +45,10 @@ class TranslationWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              if (translation.audios.isNotEmpty)
+              if (hasAudio)
                 InkWell(
                   onTap: () {
-                    context.read<SentenceBloc>().add(
-                          PlayAudioEvent(translation.audios.first.downloadUrl),
-                        );
+                    context.read<SentenceBloc>().add(PlayAudioEvent(audioUrl!));
                   },
                   child: const Icon(Icons.play_arrow, size: 24),
                 ),
@@ -70,7 +72,7 @@ class TranslationWidget extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        transcription!.script == 'Hrkt'
+                        transcription!['script'] == 'Hrkt'
                             ? 'Furigana'
                             : 'Transcription',
                         style: TextStyle(fontSize: 12, color: Colors.grey[700]),
@@ -129,7 +131,7 @@ class TranslationWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                transcription!.text,
+                transcription!['text'] ?? '',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[700],

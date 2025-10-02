@@ -1,3 +1,3 @@
 class AppConstant {
-  static String baseUrl = 'https://api.tatoeba.org/';
+  static String baseUrl = 'https://tatoeba.org/';
 }

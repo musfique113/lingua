@@ -1,16 +1,21 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lingua/features/sentence/domain/entities/sentence.dart';
+import 'package:lingua/features/sentence/data/models/sentence_model.dart';
 import 'package:lingua/features/sentence/presentation/bloc/sentence_bloc.dart';
 
 class MainSentenceWidget extends StatelessWidget {
-  final Sentence sentence;
+  final SentenceModel sentence;
 
   const MainSentenceWidget({super.key, required this.sentence});
 
   @override
   Widget build(BuildContext context) {
+    // Check if audios list is not empty and get download URL
+    final hasAudio = sentence.audios.isNotEmpty;
+    final audioUrl = hasAudio
+        ? 'https://api.tatoeba.org/unstable/audio/${sentence.audios.first.id}/file'
+        : null;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -44,12 +49,7 @@ class MainSentenceWidget extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Text(
-                'Contributor: ${sentence.owner}',
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                sentence.license ?? '',
+                sentence.license,
                 style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
             ],
@@ -57,22 +57,23 @@ class MainSentenceWidget extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              if (sentence.audios.isNotEmpty)
-                InkWell(
-                  onTap: () {
-                    context.read<SentenceBloc>().add(
-                          PlayAudioEvent(sentence.audios.first.downloadUrl),
+              InkWell(
+                onTap: hasAudio
+                    ? () {
+                        context.read<SentenceBloc>().add(
+                          PlayAudioEvent(audioUrl!),
                         );
-                  },
-                  child: const Icon(Icons.play_arrow, size: 32),
-                )
-              else
-                const Icon(Icons.play_arrow, size: 32, color: Colors.grey),
+                      }
+                    : null,
+                child: Icon(
+                  Icons.play_arrow,
+                  size: 32,
+                  color: hasAudio ? Colors.black : Colors.grey,
+                ),
+              ),
               const Spacer(),
               Text(
-                sentence.audios.isNotEmpty
-                    ? 'Audio available'
-                    : 'No audio available',
+                hasAudio ? 'Audio available' : 'No audio available',
                 style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
             ],

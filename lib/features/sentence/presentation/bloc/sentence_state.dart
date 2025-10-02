@@ -12,7 +12,7 @@ class SentenceInitial extends SentenceState {}
 class SentenceLoading extends SentenceState {}
 
 class SentenceLoaded extends SentenceState {
-  final Sentence sentence;
+  final SentenceModel sentence;
 
   const SentenceLoaded(this.sentence);
 
