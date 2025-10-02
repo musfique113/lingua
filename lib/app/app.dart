@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
         routes: AppRoutes.routes,
         theme: AppTheme.lightTheme(),
         darkTheme: AppTheme.darkTheme(),
+        debugShowCheckedModeBanner: false,
         builder: (context, child) {
           return BlocListener<ConnectivityBloc, ConnectivityState>(
             listenWhen: (previous, current) {
