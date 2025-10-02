@@ -1,16 +1,14 @@
-# lingua
+<img width="1327" height="704" alt="Screenshot 2025-10-02 at 5 11 53 PM" src="https://github.com/user-attachments/assets/61e9a6ee-bfaa-4547-a2e9-dcd3aea2bdb9" />
 
-A new Flutter project.
+## 
+Lingua is a mobile application built with Flutter that helps users learn new languages by providing
+sentences in different languages. Users can listen to the pronunciation of the sentences and view
+translations.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- View random sentences in different languages.
+- Listen to the pronunciation of the sentences.
+- View translations of the sentences.
+- Shimmer effect while loading data.
+- Works offline.
