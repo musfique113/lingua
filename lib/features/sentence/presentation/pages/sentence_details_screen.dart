@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lingua/features/sentence/presentation/bloc/sentence_bloc.dart';
 import 'package:lingua/features/sentence/presentation/widget/sentence_content_widget.dart';
+import 'package:lingua/features/sentence/presentation/widget/sentence_error_widget.dart';
+import 'package:lingua/features/sentence/presentation/widget/sentence_loading_widget.dart';
 
 class SentenceDetailScreen extends StatelessWidget {
   const SentenceDetailScreen({super.key});
@@ -11,82 +13,55 @@ class SentenceDetailScreen extends StatelessWidget {
     return Scaffold(
       floatingActionButton: BlocBuilder<SentenceBloc, SentenceState>(
         builder: (context, state) {
-          final isLoading = state is SentenceLoading;
           return FloatingActionButton.extended(
-            onPressed: isLoading
+            onPressed:
+                (state is SentenceLoading ||
+                    state is AudioLoading ||
+                    state is AudioPlaying)
                 ? null
                 : () {
                     context.read<SentenceBloc>().add(LoadRandomSentence());
                   },
-            backgroundColor: isLoading ? Colors.grey : Color(0xFF7C3AED),
+            backgroundColor: (state is SentenceLoading || state is AudioLoading)
+                ? Colors.grey
+                : const Color(0xFF7C3AED),
             foregroundColor: Colors.white,
             label: Row(
-              children: [
-                const Icon(Icons.shuffle, size: 18),
+              children: const [
+                Icon(Icons.shuffle, size: 18),
                 SizedBox(width: 9),
-                Text('Random'),
+                Text('New Sentence'),
               ],
             ),
           );
         },
       ),
       body: SafeArea(
-        child: BlocBuilder<SentenceBloc, SentenceState>(
-          builder: (context, state) {
-            if (state is SentenceInitial) {
-              context.read<SentenceBloc>().add(LoadRandomSentence());
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is SentenceLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is SentenceLoaded) {
-              return SentenceContentWidget(sentence: state.sentence);
-            } else if (state is AudioLoading) {
-              return SentenceContentWidget(sentence: state.sentence);
-            } else if (state is AudioPlaying) {
-              return SentenceContentWidget(sentence: state.sentence);
-            } else if (state is SentenceError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Error loading sentence',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[800],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      state.message,
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        context.read<SentenceBloc>().add(LoadRandomSentence());
-                      },
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Try Again'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-            return const SizedBox.shrink();
-          },
+        child: Container(
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: BlocBuilder<SentenceBloc, SentenceState>(
+            builder: (context, state) {
+              if (state is SentenceInitial) {
+                context.read<SentenceBloc>().add(LoadRandomSentence());
+                return const SentenceLoadingWidget();
+              } else if (state is SentenceLoading) {
+                return const SentenceLoadingWidget();
+              } else if (state is SentenceLoaded) {
+                return SentenceContentWidget(sentence: state.sentence);
+              } else if (state is AudioLoading) {
+                return SentenceContentWidget(sentence: state.sentence);
+              } else if (state is AudioPlaying) {
+                return SentenceContentWidget(sentence: state.sentence);
+              } else if (state is SentenceError) {
+                return SentenceErrorWidget(state: state);
+              }
+              return const SizedBox.shrink();
+            },
+          ),
         ),
       ),
     );

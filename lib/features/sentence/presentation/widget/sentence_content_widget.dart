@@ -10,56 +10,48 @@ class SentenceContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Flatten the nested translations list and take first 5
     final flatTranslations = sentence.translations
         .expand((group) => group)
         .take(10)
         .toList();
 
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              MainSentenceWidget(sentence: sentence),
+              if (flatTranslations.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                const Text(
+                  '🌐 Translations',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ],
+          ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                MainSentenceWidget(sentence: sentence),
                 if (flatTranslations.isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  const Text(
-                    '🌐 Translations',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ...flatTranslations.map(
+                    (translation) =>
+                        TranslationWidget(translation: translation),
                   ),
-                ],
+                ] else
+                  SizedBox.shrink(),
               ],
             ),
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (flatTranslations.isNotEmpty) ...[
-                    ...flatTranslations.map(
-                      (translation) =>
-                          TranslationWidget(translation: translation),
-                    ),
-                  ] else
-                    SizedBox.shrink(),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

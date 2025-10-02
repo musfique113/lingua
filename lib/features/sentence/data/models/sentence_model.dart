@@ -74,6 +74,30 @@ class SentenceModel {
       currentUserReview: json["current_user_review"],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "text": text,
+      "lang": lang,
+      "correctness": correctness,
+      "script": script,
+      "license": license,
+      "translations": translations
+          .map((list) => list.map((x) => x.toJson()).toList())
+          .toList(),
+      "transcriptions": transcriptions,
+      "audios": audios.map((x) => x.toJson()).toList(),
+      "lang_name": langName,
+      "dir": dir,
+      "lang_tag": langTag,
+      "is_favorite": isFavorite,
+      "is_owned_by_current_user": isOwnedByCurrentUser,
+      "permissions": permissions,
+      "max_visible_translations": maxVisibleTranslations,
+      "current_user_review": currentUserReview,
+    };
+  }
 }
 
 class ResultAudio {
@@ -96,6 +120,15 @@ class ResultAudio {
       attributionUrl: json["attribution_url"],
       license: json["license"],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "author": author,
+      "attribution_url": attributionUrl,
+      "license": license,
+    };
   }
 }
 
@@ -147,6 +180,22 @@ class Translation {
       langTag: json["lang_tag"] ?? "",
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "text": text,
+      "lang": lang,
+      "correctness": correctness,
+      "script": script,
+      "transcriptions": transcriptions,
+      "audios": audios.map((x) => x.toJson()).toList(),
+      "isDirect": isDirect,
+      "lang_name": langName,
+      "dir": dir,
+      "lang_tag": langTag,
+    };
+  }
 }
 
 class TranslationAudio {
@@ -175,5 +224,16 @@ class TranslationAudio {
       audioExternal: json["external"],
       sentenceId: json["sentence_id"] ?? 0,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "author": author,
+      "attribution_url": attributionUrl,
+      "license": license,
+      "external": audioExternal,
+      "sentence_id": sentenceId,
+    };
   }
 }
